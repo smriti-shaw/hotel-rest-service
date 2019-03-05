@@ -24,8 +24,7 @@ public class ApiKeyInterceptor extends HandlerInterceptorAdapter {
 
         if(!request.getRequestURI().contains("secure"))
         isEligible = rateLimitService.updateAndCheckEligibilityOfRequest(apiKey);
-        System.out.println("iseligible"+isEligible);
-        if(isEligible == Boolean.FALSE)
+         if(isEligible == Boolean.FALSE)
             throw  new RateLimitExceededException("oops!! you have exceeded request count. please try aftersometime ");
         return super.preHandle(request, response, handler);
     }
