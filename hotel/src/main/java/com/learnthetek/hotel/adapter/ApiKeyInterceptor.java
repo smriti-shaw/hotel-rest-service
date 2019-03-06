@@ -1,6 +1,7 @@
 package com.learnthetek.hotel.adapter;
 
-import com.learnthetek.hotel.exception.RateLimitExceededException;
+
+import com.learnthetek.hotel.exception.InvalidAccesssKey;
 import com.learnthetek.hotel.service.RateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,22 @@ public class ApiKeyInterceptor extends HandlerInterceptorAdapter {
 
         String apiKey = request.getHeader("api-key");
         Boolean isEligible = Boolean.TRUE;
+        String str = null;
+        try {
+            if (request.getRequestURI().contains("hotels"))
+                isEligible = rateLimitService.updateAndCheckEligibilityOfRequest(apiKey);
+        }catch (InvalidAccesssKey e){
+            isEligible = Boolean.FALSE;
+            str = e.getMessage();
+        }catch (Exception e){
+            isEligible = Boolean.FALSE;
+            str = e.getMessage();
+        }
 
-        if(!request.getRequestURI().contains("secure"))
-        isEligible = rateLimitService.updateAndCheckEligibilityOfRequest(apiKey);
-         if(isEligible == Boolean.FALSE)
-            throw  new RateLimitExceededException("oops!! you have exceeded request count. please try aftersometime ");
+         if(isEligible == Boolean.FALSE) {
+             response.setStatus(101);
+             response.setHeader("error-response", str);
+         }
         return super.preHandle(request, response, handler);
     }
 }
