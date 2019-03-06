@@ -1,10 +1,10 @@
 package com.learnthetek.hotel.controller;
 
+import com.learnthetek.hotel.constants.ErrorMsg;
 import com.learnthetek.hotel.exception.InvalidAccesssKey;
 import com.learnthetek.hotel.service.HotelService;
 import com.learnthetek.hotel.dto.HotelDTO;
 import com.learnthetek.hotel.exception.HotelException;
-import com.learnthetek.hotel.exception.RateLimitExceededException;
 import com.learnthetek.hotel.repository.HotelRepository;
 import com.learnthetek.hotel.service.RateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +34,12 @@ RateLimitService rateLimitService;
                                                        @RequestParam(value = "sort", defaultValue = "ASC") String sortingOrder,
                                                        @PathVariable("city") String city, HttpServletResponse response){
 
-        System.out.println("controller got called first");
-        if(response.getStatus() == 101)
+        if(response.getStatus() == ErrorMsg.INVALID_ACCESS_KEY_TOKEN)
             throw new InvalidAccesssKey(response.getHeader("error-response"));
 
         List<HotelDTO> hotels = hotelService.getHotelsByCityId(city, sortingOrder);
         if(hotels.isEmpty() )
-            throw new HotelException("currently no hotels are available for "+city);
+            throw new HotelException(ErrorMsg.NO_HOTELS_AVAILABLE +city);
 
         return new ResponseEntity<>(hotels, HttpStatus.OK);
     }

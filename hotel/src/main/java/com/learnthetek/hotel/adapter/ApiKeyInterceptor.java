@@ -1,6 +1,7 @@
 package com.learnthetek.hotel.adapter;
 
 
+import com.learnthetek.hotel.constants.ErrorMsg;
 import com.learnthetek.hotel.exception.InvalidAccesssKey;
 import com.learnthetek.hotel.service.RateLimitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ApiKeyInterceptor extends HandlerInterceptorAdapter {
         }
 
          if(isEligible == Boolean.FALSE) {
-             response.setStatus(101);
+             response.setStatus(ErrorMsg.INVALID_ACCESS_KEY_TOKEN);
              response.setHeader("error-response", str);
          }
         return super.preHandle(request, response, handler);

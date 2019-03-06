@@ -1,5 +1,6 @@
 package com.learnthetek.hotel.service.impl;
 
+import com.learnthetek.hotel.constants.ErrorMsg;
 import com.learnthetek.hotel.dto.RateLimitModel;
 import com.learnthetek.hotel.exception.InvalidAccesssKey;
 import com.learnthetek.hotel.service.RateLimitService;
@@ -37,17 +38,15 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     @Override
     public Boolean updateAndCheckEligibilityOfRequest(String apiKey){
-        System.out.println("size" + accessKeyStore.size());
-        System.out.println("api key"+apiKey);
         if(accessKeyStore.containsKey(apiKey) ){
             RateLimitModel rateLimitModel = accessKeyStore.get(apiKey);
             return checkAndIncrement(rateLimitModel);
         }
         if(blockedAccessKeyStore.containsKey(apiKey)){
-            throw new InvalidAccesssKey("please try after sometime");
+            throw new InvalidAccesssKey(ErrorMsg.BLOCKED_ACCESS_KEY);
         }
         else
-            throw new InvalidAccesssKey("access key is not found");
+            throw new InvalidAccesssKey(ErrorMsg.ACCESS_KEY_FOUND);
     }
 
     private Boolean checkAndIncrement(RateLimitModel rateLimitModel) {
